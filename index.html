@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramp Travel 2.0 - UI Concepts | Di Larmore Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+    <div class="max-w-4xl mx-auto px-6 py-16">
+        <div class="text-center mb-12">
+            <p class="text-sm font-medium text-slate-500 uppercase tracking-wider mb-2">Di Larmore Portfolio</p>
+            <h1 class="text-3xl font-bold text-slate-900 mb-4">Ramp Travel 2.0</h1>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                Interactive UI concepts for Group Travel coordination and AI-powered travel management.
+            </p>
+        </div>
+
+        <div class="grid gap-6">
+            <!-- Dashboard Card -->
+            <a href="ramp-group-travel-dashboard.html" class="block bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:border-slate-300 transition-all group">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h2 class="text-xl font-semibold text-slate-900 group-hover:text-emerald-600 transition-colors">
+                            1. Group Travel Dashboard
+                        </h2>
+                        <p class="text-slate-600 mt-1">
+                            The Trip Command Center — unified view of traveler status, budget health, and policy compliance for team travel coordinators.
+                        </p>
+                        <div class="flex items-center gap-4 mt-4 text-sm">
+                            <span class="px-2 py-1 bg-emerald-50 text-emerald-700 rounded-md font-medium">Interactive</span>
+                            <span class="text-slate-500">Click "Send Reminder" to see state change</span>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </div>
+            </a>
+
+            <!-- Soft Block Card -->
+            <a href="ramp-soft-block-ui.html" class="block bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:border-slate-300 transition-all group">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h2 class="text-xl font-semibold text-slate-900 group-hover:text-amber-600 transition-colors">
+                            2. Soft Block (Policy Override)
+                        </h2>
+                        <p class="text-slate-600 mt-1">
+                            The "speed bump" — allowing out-of-policy bookings with justification instead of hard blocks that force users off-platform.
+                        </p>
+                        <div class="flex items-center gap-4 mt-4 text-sm">
+                            <span class="px-2 py-1 bg-amber-50 text-amber-700 rounded-md font-medium">Interactive</span>
+                            <span class="text-slate-500">Type justification and submit to see flow</span>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-amber-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </div>
+            </a>
+
+            <!-- AI Concierge Card -->
+            <a href="ramp-ai-concierge-notification.html" class="block bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:border-slate-300 transition-all group">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h2 class="text-xl font-semibold text-slate-900 group-hover:text-purple-600 transition-colors">
+                            3. AI Concierge Notification
+                        </h2>
+                        <p class="text-slate-600 mt-1">
+                            The Proactive Concierge — turning travel disruptions into trust moments with one-tap rebooking from the lock screen.
+                        </p>
+                        <div class="flex items-center gap-4 mt-4 text-sm">
+                            <span class="px-2 py-1 bg-purple-50 text-purple-700 rounded-md font-medium">Interactive</span>
+                            <span class="text-slate-500">Tap notification to expand, book alternative</span>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-purple-600 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </div>
+            </a>
+        </div>
+
+        <div class="mt-12 text-center">
+            <p class="text-sm text-slate-500">
+                These conceptual interfaces demonstrate product thinking for the Ramp Travel 2.0 VQ.
+                <br />
+                <a href="https://dilarmore.com" class="text-slate-700 hover:text-slate-900 underline">View full portfolio →</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

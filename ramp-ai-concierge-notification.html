@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramp Travel - AI Concierge Notification</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        body { margin: 0; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState } = React;
+
+        function AIConciergeNotification() {
+            const [expanded, setExpanded] = useState(true);
+            const [booked, setBooked] = useState(false);
+
+            const handleReset = () => {
+                setExpanded(true);
+                setBooked(false);
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-6">
+                    {/* iPhone Frame */}
+                    <div className="relative w-[393px] bg-black rounded-[3rem] p-3 shadow-2xl">
+                        <div className="bg-gradient-to-br from-slate-800 via-slate-900 to-purple-950 rounded-[2.5rem] overflow-hidden min-h-[700px] relative">
+                            {/* Dynamic Island */}
+                            <div className="absolute top-3 left-1/2 -translate-x-1/2 w-28 h-8 bg-black rounded-full" />
+                            
+                            {/* Lock Screen */}
+                            <div className="pt-16 text-center">
+                                <p className="text-7xl font-light text-white tracking-tight">9:41</p>
+                                <p className="text-lg text-white/80 mt-1">Monday, January 6</p>
+                            </div>
+
+                            {/* Notifications */}
+                            <div className="mt-8 mx-4">
+                                {/* Main Notification */}
+                                <div 
+                                    className={`backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 overflow-hidden transition-all duration-300 cursor-pointer ${expanded ? 'shadow-lg' : ''}`}
+                                    onClick={() => !booked && setExpanded(!expanded)}
+                                >
+                                    {/* Notification Header */}
+                                    <div className="flex items-start gap-3 p-4 pb-2">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                            </svg>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-sm font-semibold text-white/90">Ramp Travel</span>
+                                                <span className="text-xs text-white/50">now</span>
+                                            </div>
+                                            <p className="text-sm font-medium text-white mt-0.5">
+                                                ✈️ Flight Delay Alert: UA455
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Notification Body */}
+                                    <div className="px-4 pb-3">
+                                        <p className="text-sm text-white/80 leading-relaxed">
+                                            Your flight is delayed 4 hours. I found a Delta option leaving in 50m{' '}
+                                            <span className="text-amber-400 font-medium">($40 over policy)</span>.
+                                        </p>
+                                    </div>
+
+                                    {/* Expanded Content */}
+                                    {expanded && !booked && (
+                                        <div className="border-t border-white/10">
+                                            {/* Flight Comparison */}
+                                            <div className="px-4 py-3 bg-white/5">
+                                                <div className="flex items-center justify-between text-xs text-white/60 mb-2">
+                                                    <span>Current</span>
+                                                    <span>Alternative</span>
+                                                </div>
+                                                <div className="flex items-center justify-between">
+                                                    <div className="text-center">
+                                                        <p className="text-white/40 text-sm line-through">UA455</p>
+                                                        <p className="text-xs text-red-400">Delayed 4h</p>
+                                                    </div>
+                                                    <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                    </svg>
+                                                    <div className="text-center">
+                                                        <p className="text-white font-medium">DL1420</p>
+                                                        <p className="text-xs text-emerald-400">Leaves 50m</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Action Buttons */}
+                                            <div className="flex divide-x divide-white/10">
+                                                <button 
+                                                    className="flex-1 py-3.5 text-center text-blue-400 font-semibold text-sm active:bg-white/10 transition-colors"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setBooked(true);
+                                                    }}
+                                                >
+                                                    Book Delta 1420 ($340)
+                                                </button>
+                                                <button 
+                                                    className="flex-1 py-3.5 text-center text-white/60 text-sm active:bg-white/10 transition-colors"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    View Options
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Booked Confirmation */}
+                                    {booked && (
+                                        <div className="border-t border-white/10 bg-emerald-500/20 px-4 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
+                                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-medium text-white">Booked! DL1420 confirmed</p>
+                                                    <p className="text-xs text-white/60">Confirmation sent to your email</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Secondary Notification (dimmed) */}
+                                <div className="mt-3 backdrop-blur-xl bg-white/5 rounded-2xl p-4 opacity-60">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                                            <span className="text-white text-xs font-bold">R</span>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-white/70">Ramp • 2h ago</p>
+                                            <p className="text-sm text-white/80">Your Austin hotel is confirmed ✓</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Bottom Icons */}
+                            <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-2">
+                                <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur flex items-center justify-center">
+                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                                <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur flex items-center justify-center">
+                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            {/* Home Indicator */}
+                            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/50 rounded-full" />
+                        </div>
+                    </div>
+
+                    {/* Reset Button (outside phone) */}
+                    {booked && (
+                        <button 
+                            onClick={handleReset}
+                            className="absolute bottom-8 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 backdrop-blur text-white/80 text-sm rounded-full hover:bg-white/20 transition-colors"
+                        >
+                            Reset Demo
+                        </button>
+                    )}
+
+                    <div className="absolute bottom-6 text-center w-full pointer-events-none">
+                        <p className="text-xs text-white/40">
+                            Conceptual UI • Tap notification to interact • Di Larmore Portfolio
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<AIConciergeNotification />);
+    </script>
+</body>
+</html>
