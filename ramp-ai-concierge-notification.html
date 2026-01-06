@@ -4,195 +4,159 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ramp Travel - AI Concierge Notification</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
-        body { margin: 0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .phone-frame { width: 375px; background: #f5f5f5; border-radius: 40px; padding: 12px; box-shadow: 0 25px 50px rgba(0,0,0,0.4); }
+        .phone-screen { background: white; border-radius: 32px; overflow: hidden; min-height: 600px; }
+        .status-bar { background: #1a1a1a; color: white; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 500; }
+        .status-time { font-weight: 600; }
+        .status-icons { display: flex; gap: 6px; align-items: center; }
+        .notification-container { padding: 16px; }
+        .notification { background: white; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); overflow: hidden; margin-bottom: 16px; }
+        .notification-header { background: #1a1a1a; color: white; padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+        .app-icon { width: 28px; height: 28px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+        .app-icon svg { width: 16px; height: 16px; }
+        .app-name { font-size: 13px; font-weight: 600; flex: 1; }
+        .notification-time { font-size: 12px; opacity: 0.7; }
+        .notification-body { padding: 16px; }
+        .alert-badge { display: inline-flex; align-items: center; gap: 6px; background: #fef3c7; color: #92400e; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
+        .alert-badge svg { width: 14px; height: 14px; }
+        .notification-title { font-size: 16px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
+        .notification-text { font-size: 14px; color: #4b5563; line-height: 1.5; margin-bottom: 16px; }
+        .flight-card { background: #f9fafb; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+        .flight-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .airline { display: flex; align-items: center; gap: 8px; }
+        .airline-logo { width: 32px; height: 32px; background: #1e40af; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700; }
+        .airline-info { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+        .airline-sub { font-size: 12px; color: #6b7280; }
+        .price-tag { text-align: right; }
+        .price { font-size: 20px; font-weight: 700; color: #1a1a1a; }
+        .price-note { font-size: 11px; color: #f59e0b; }
+        .flight-route { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid #e5e7eb; }
+        .route-point { text-align: center; flex: 1; }
+        .route-time { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+        .route-code { font-size: 12px; color: #6b7280; margin-top: 2px; }
+        .route-line { flex: 2; display: flex; align-items: center; gap: 8px; }
+        .route-line-bar { flex: 1; height: 2px; background: #d1d5db; position: relative; }
+        .route-line-bar::after { content: ''; position: absolute; right: -4px; top: -3px; width: 8px; height: 8px; background: #d1d5db; border-radius: 50%; }
+        .route-duration { font-size: 11px; color: #6b7280; white-space: nowrap; }
+        .action-buttons { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 14px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+        .btn-primary { background: #1a1a1a; color: white; }
+        .btn-primary:hover { background: #333; }
+        .btn-secondary { background: #f3f4f6; color: #374151; }
+        .btn-secondary:hover { background: #e5e7eb; }
+        .ai-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #8b5cf6; margin-top: 12px; }
+        .ai-badge svg { width: 12px; height: 12px; }
+        .success-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 32px; }
+        .success-icon { width: 64px; height: 64px; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+        .success-icon svg { width: 32px; height: 32px; color: #22c55e; }
+        .success-title { font-size: 20px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
+        .success-text { font-size: 14px; color: #6b7280; text-align: center; max-width: 250px; }
+        .hidden { display: none; }
+        .phone-screen { position: relative; }
     </style>
 </head>
 <body>
-    <div id="root"></div>
-    <script type="text/babel">
-        const { useState } = React;
-
-        function AIConciergeNotification() {
-            const [expanded, setExpanded] = useState(true);
-            const [booked, setBooked] = useState(false);
-
-            const handleReset = () => {
-                setExpanded(true);
-                setBooked(false);
-            };
-
-            return (
-                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-6">
-                    {/* iPhone Frame */}
-                    <div className="relative w-[393px] bg-black rounded-[3rem] p-3 shadow-2xl">
-                        <div className="bg-gradient-to-br from-slate-800 via-slate-900 to-purple-950 rounded-[2.5rem] overflow-hidden min-h-[700px] relative">
-                            {/* Dynamic Island */}
-                            <div className="absolute top-3 left-1/2 -translate-x-1/2 w-28 h-8 bg-black rounded-full" />
-                            
-                            {/* Lock Screen */}
-                            <div className="pt-16 text-center">
-                                <p className="text-7xl font-light text-white tracking-tight">9:41</p>
-                                <p className="text-lg text-white/80 mt-1">Monday, January 6</p>
-                            </div>
-
-                            {/* Notifications */}
-                            <div className="mt-8 mx-4">
-                                {/* Main Notification */}
-                                <div 
-                                    className={`backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 overflow-hidden transition-all duration-300 cursor-pointer ${expanded ? 'shadow-lg' : ''}`}
-                                    onClick={() => !booked && setExpanded(!expanded)}
-                                >
-                                    {/* Notification Header */}
-                                    <div className="flex items-start gap-3 p-4 pb-2">
-                                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                            </svg>
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-sm font-semibold text-white/90">Ramp Travel</span>
-                                                <span className="text-xs text-white/50">now</span>
-                                            </div>
-                                            <p className="text-sm font-medium text-white mt-0.5">
-                                                ✈️ Flight Delay Alert: UA455
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* Notification Body */}
-                                    <div className="px-4 pb-3">
-                                        <p className="text-sm text-white/80 leading-relaxed">
-                                            Your flight is delayed 4 hours. I found a Delta option leaving in 50m{' '}
-                                            <span className="text-amber-400 font-medium">($40 over policy)</span>.
-                                        </p>
-                                    </div>
-
-                                    {/* Expanded Content */}
-                                    {expanded && !booked && (
-                                        <div className="border-t border-white/10">
-                                            {/* Flight Comparison */}
-                                            <div className="px-4 py-3 bg-white/5">
-                                                <div className="flex items-center justify-between text-xs text-white/60 mb-2">
-                                                    <span>Current</span>
-                                                    <span>Alternative</span>
-                                                </div>
-                                                <div className="flex items-center justify-between">
-                                                    <div className="text-center">
-                                                        <p className="text-white/40 text-sm line-through">UA455</p>
-                                                        <p className="text-xs text-red-400">Delayed 4h</p>
-                                                    </div>
-                                                    <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                                    </svg>
-                                                    <div className="text-center">
-                                                        <p className="text-white font-medium">DL1420</p>
-                                                        <p className="text-xs text-emerald-400">Leaves 50m</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Action Buttons */}
-                                            <div className="flex divide-x divide-white/10">
-                                                <button 
-                                                    className="flex-1 py-3.5 text-center text-blue-400 font-semibold text-sm active:bg-white/10 transition-colors"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setBooked(true);
-                                                    }}
-                                                >
-                                                    Book Delta 1420 ($340)
-                                                </button>
-                                                <button 
-                                                    className="flex-1 py-3.5 text-center text-white/60 text-sm active:bg-white/10 transition-colors"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                >
-                                                    View Options
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Booked Confirmation */}
-                                    {booked && (
-                                        <div className="border-t border-white/10 bg-emerald-500/20 px-4 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
-                                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                    </svg>
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-medium text-white">Booked! DL1420 confirmed</p>
-                                                    <p className="text-xs text-white/60">Confirmation sent to your email</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Secondary Notification (dimmed) */}
-                                <div className="mt-3 backdrop-blur-xl bg-white/5 rounded-2xl p-4 opacity-60">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                                            <span className="text-white text-xs font-bold">R</span>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs text-white/70">Ramp • 2h ago</p>
-                                            <p className="text-sm text-white/80">Your Austin hotel is confirmed ✓</p>
-                                        </div>
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <div class="status-bar">
+                <span class="status-time">9:41</span>
+                <div class="status-icons">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C7.5 3 3.75 5.25 1.5 9L12 21l10.5-12C20.25 5.25 16.5 3 12 3z"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h20V2z"/></svg>
+                </div>
+            </div>
+            
+            <div class="notification-container" id="notificationState">
+                <div class="notification">
+                    <div class="notification-header">
+                        <div class="app-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2">
+                                <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
+                            </svg>
+                        </div>
+                        <span class="app-name">Ramp Travel</span>
+                        <span class="notification-time">now</span>
+                    </div>
+                    
+                    <div class="notification-body">
+                        <div class="alert-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 8v4M12 16h.01"/>
+                            </svg>
+                            Flight Delay Alert
+                        </div>
+                        
+                        <h3 class="notification-title">Your flight is delayed 4 hours</h3>
+                        <p class="notification-text">I found a Delta option leaving in 50 minutes that gets you there on time. It's $40 over policy but saves your meeting.</p>
+                        
+                        <div class="flight-card">
+                            <div class="flight-header">
+                                <div class="airline">
+                                    <div class="airline-logo">DL</div>
+                                    <div>
+                                        <div class="airline-info">Delta 1420</div>
+                                        <div class="airline-sub">Economy • 2h 45m</div>
                                     </div>
                                 </div>
-                            </div>
-
-                            {/* Bottom Icons */}
-                            <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-2">
-                                <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                </div>
-                                <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
-                                    </svg>
+                                <div class="price-tag">
+                                    <div class="price">$340</div>
+                                    <div class="price-note">$40 over policy</div>
                                 </div>
                             </div>
-
-                            {/* Home Indicator */}
-                            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/50 rounded-full" />
+                            <div class="flight-route">
+                                <div class="route-point">
+                                    <div class="route-time">10:30</div>
+                                    <div class="route-code">SFO</div>
+                                </div>
+                                <div class="route-line">
+                                    <div class="route-line-bar"></div>
+                                    <span class="route-duration">2h 45m</span>
+                                    <div class="route-line-bar"></div>
+                                </div>
+                                <div class="route-point">
+                                    <div class="route-time">3:15</div>
+                                    <div class="route-code">AUS</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary">Dismiss</button>
+                            <button class="btn btn-primary" onclick="bookFlight()">Book Delta 1420</button>
+                        </div>
+                        
+                        <div class="ai-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2a10 10 0 1 0 10 10H12V2z"/>
+                                <path d="M12 2a7 7 0 0 1 7 7h-7V2z"/>
+                            </svg>
+                            AI Concierge recommendation
                         </div>
                     </div>
-
-                    {/* Reset Button (outside phone) */}
-                    {booked && (
-                        <button 
-                            onClick={handleReset}
-                            className="absolute bottom-8 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 backdrop-blur text-white/80 text-sm rounded-full hover:bg-white/20 transition-colors"
-                        >
-                            Reset Demo
-                        </button>
-                    )}
-
-                    <div className="absolute bottom-6 text-center w-full pointer-events-none">
-                        <p className="text-xs text-white/40">
-                            Conceptual UI • Tap notification to interact • Di Larmore Portfolio
-                        </p>
-                    </div>
                 </div>
-            );
+            </div>
+            
+            <div class="success-overlay hidden" id="successState">
+                <div class="success-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                </div>
+                <h3 class="success-title">Flight Booked!</h3>
+                <p class="success-text">Delta 1420 confirmed. You'll arrive in Austin at 3:15 PM.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function bookFlight() {
+            document.getElementById('notificationState').classList.add('hidden');
+            document.getElementById('successState').classList.remove('hidden');
         }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<AIConciergeNotification />);
     </script>
 </body>
 </html>

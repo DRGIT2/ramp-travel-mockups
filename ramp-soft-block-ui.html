@@ -4,220 +4,148 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ramp Travel - Soft Block Policy Override</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
-        body { margin: 0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #6b7280; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); }
+        .modal { position: relative; background: white; border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.25); max-width: 480px; width: 100%; overflow: hidden; }
+        .modal-header { padding: 20px 24px; display: flex; align-items: flex-start; gap: 12px; border-bottom: 1px solid #f0f0f0; }
+        .warning-icon { width: 40px; height: 40px; background: #fef3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .warning-icon svg { width: 24px; height: 24px; color: #f59e0b; }
+        .header-text h2 { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+        .header-text p { font-size: 14px; color: #f59e0b; margin-top: 2px; }
+        .close-btn { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border: none; background: #f5f5f5; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .close-btn:hover { background: #e5e5e5; }
+        .modal-body { padding: 24px; }
+        .alert-text { font-size: 15px; color: #374151; line-height: 1.5; margin-bottom: 20px; }
+        .alert-text strong { color: #dc2626; font-weight: 600; }
+        .comparison { background: #f9fafb; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+        .comparison-title { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+        .comparison-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
+        .comparison-row:not(:last-child) { border-bottom: 1px solid #e5e7eb; }
+        .comparison-label { font-size: 14px; color: #374151; }
+        .comparison-value { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+        .comparison-value.over { color: #dc2626; }
+        .progress-container { margin-top: 12px; }
+        .progress-bar { height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; display: flex; }
+        .progress-green { background: #22c55e; }
+        .progress-amber { background: #f59e0b; }
+        .progress-labels { display: flex; justify-content: space-between; margin-top: 4px; font-size: 11px; color: #6b7280; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px; }
+        .form-input { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-input:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1); }
+        .form-input::placeholder { color: #9ca3af; }
+        .modal-footer { padding: 16px 24px; background: #f9fafb; display: flex; gap: 12px; }
+        .btn { flex: 1; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-cancel { background: white; border: 1px solid #d1d5db; color: #374151; }
+        .btn-cancel:hover { background: #f9fafb; }
+        .btn-book { background: #f59e0b; border: 1px solid #f59e0b; color: white; opacity: 0.5; cursor: not-allowed; }
+        .btn-book.enabled { opacity: 1; cursor: pointer; }
+        .btn-book.enabled:hover { background: #d97706; }
+        .success-state { text-align: center; padding: 40px 24px; }
+        .success-icon { width: 64px; height: 64px; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+        .success-icon svg { width: 32px; height: 32px; color: #22c55e; }
+        .success-title { font-size: 20px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
+        .success-text { font-size: 14px; color: #6b7280; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-    <div id="root"></div>
-    <script type="text/babel">
-        const { useState } = React;
-
-        function SoftBlockUI() {
-            const [justification, setJustification] = useState('');
-            const [submitted, setSubmitted] = useState(false);
-            const [showModal, setShowModal] = useState(true);
-
-            const handleSubmit = () => {
-                if (justification.trim()) {
-                    setSubmitted(true);
-                }
-            };
-
-            const handleReset = () => {
-                setJustification('');
-                setSubmitted(false);
-                setShowModal(true);
-            };
-
-            return (
-                <div className="min-h-screen bg-slate-100 flex items-center justify-center p-6">
-                    {/* Background booking UI (blurred) */}
-                    <div className="absolute inset-0 bg-slate-50">
-                        <div className="max-w-4xl mx-auto p-6 opacity-40 pointer-events-none">
-                            <div className="bg-white rounded-xl border border-slate-200 p-6">
-                                <h2 className="text-lg font-semibold text-slate-900 mb-4">Select Your Flight</h2>
-                                <div className="space-y-3">
-                                    {[1, 2, 3].map((i) => (
-                                        <div key={i} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 bg-slate-200 rounded" />
-                                                <div>
-                                                    <div className="h-4 w-32 bg-slate-200 rounded" />
-                                                    <div className="h-3 w-24 bg-slate-100 rounded mt-2" />
-                                                </div>
-                                            </div>
-                                            <div className="h-8 w-20 bg-slate-200 rounded" />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
+    <div class="modal" id="modal">
+        <div id="formState">
+            <div class="modal-header">
+                <div class="warning-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                <div class="header-text">
+                    <h2>Out of Policy</h2>
+                    <p>This booking requires approval</p>
+                </div>
+                <button class="close-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <p class="alert-text">
+                    This flight is <strong>$40 over</strong> your team's budget cap of $300.
+                </p>
+                
+                <div class="comparison">
+                    <div class="comparison-title">Price Comparison</div>
+                    <div class="comparison-row">
+                        <span class="comparison-label">Policy Cap</span>
+                        <span class="comparison-value">$300.00</span>
                     </div>
-
-                    {/* Policy Override Modal */}
-                    {showModal && !submitted && (
-                        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-                            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-                                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
-                                            <svg className="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <h3 className="text-lg font-semibold text-slate-900">Out of Policy</h3>
-                                            <p className="text-sm text-slate-500">This booking requires approval</p>
-                                        </div>
-                                    </div>
-                                    <button 
-                                        onClick={() => setShowModal(false)}
-                                        className="text-slate-400 hover:text-slate-600 transition-colors"
-                                    >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
-
-                                <div className="px-6 py-5">
-                                    <p className="text-sm text-slate-600 mb-4">
-                                        This flight is <span className="font-semibold text-slate-900">$40 over</span> your team's budget cap of $300.
-                                    </p>
-
-                                    {/* Price Comparison Card */}
-                                    <div className="bg-slate-50 rounded-xl p-4 mb-5">
-                                        <div className="flex items-center justify-between mb-3">
-                                            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Price Comparison</span>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-sm text-slate-600">Policy Cap</span>
-                                                <span className="text-sm font-medium text-slate-900">$300.00</span>
-                                            </div>
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-sm text-slate-600">This Flight</span>
-                                                <span className="text-sm font-semibold text-amber-600">$340.00</span>
-                                            </div>
-                                            <div className="h-px bg-slate-200 my-2" />
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-sm font-medium text-slate-700">Over Budget</span>
-                                                <span className="text-sm font-semibold text-amber-600">+$40.00</span>
-                                            </div>
-                                        </div>
-                                        
-                                        {/* Visual Budget Bar */}
-                                        <div className="mt-4">
-                                            <div className="h-3 bg-slate-200 rounded-full overflow-hidden relative">
-                                                <div className="absolute h-full bg-emerald-500 rounded-full" style={{ width: '75%' }} />
-                                                <div className="absolute h-full bg-amber-500 rounded-r-full" style={{ left: '75%', width: '13%' }} />
-                                            </div>
-                                            <div className="flex justify-between mt-1">
-                                                <span className="text-xs text-slate-400">$0</span>
-                                                <span className="text-xs text-slate-400">$300 cap</span>
-                                                <span className="text-xs text-amber-500">$340</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Justification Input */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                                            Reason for booking
-                                        </label>
-                                        <textarea
-                                            value={justification}
-                                            onChange={(e) => setJustification(e.target.value)}
-                                            placeholder="Enter a business justification..."
-                                            className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all resize-none"
-                                            rows={3}
-                                        />
-                                        <p className="text-xs text-slate-400 mt-2 flex items-center gap-1">
-                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            This will be reviewed by your manager.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Actions */}
-                                <div className="flex items-center justify-end gap-3 px-6 py-4 bg-slate-50 border-t border-slate-100">
-                                    <button 
-                                        onClick={() => setShowModal(false)}
-                                        className="px-4 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button 
-                                        onClick={handleSubmit}
-                                        disabled={!justification.trim()}
-                                        className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
-                                            justification.trim()
-                                                ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-sm'
-                                                : 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                        }`}
-                                    >
-                                        Book Anyway
-                                    </button>
-                                </div>
-                            </div>
+                    <div class="comparison-row">
+                        <span class="comparison-label">This Flight</span>
+                        <span class="comparison-value over">$340.00</span>
+                    </div>
+                    <div class="comparison-row">
+                        <span class="comparison-label">Over Budget</span>
+                        <span class="comparison-value over">+$40.00</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-green" style="width: 88%"></div>
+                            <div class="progress-amber" style="width: 12%"></div>
                         </div>
-                    )}
-
-                    {/* Success State */}
-                    {submitted && (
-                        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-                            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden text-center p-8">
-                                <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                </div>
-                                <h3 className="text-lg font-semibold text-slate-900 mb-2">Booking Submitted</h3>
-                                <p className="text-sm text-slate-500 mb-6">
-                                    Your manager will be notified of this out-of-policy booking.
-                                </p>
-                                <button 
-                                    onClick={handleReset}
-                                    className="px-4 py-2 text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
-                                >
-                                    Reset Demo
-                                </button>
-                            </div>
+                        <div class="progress-labels">
+                            <span>$0</span>
+                            <span>$300 cap</span>
+                            <span>$340</span>
                         </div>
-                    )}
-
-                    {/* Show Modal Button (when modal is closed) */}
-                    {!showModal && !submitted && (
-                        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-                            <button 
-                                onClick={() => setShowModal(true)}
-                                className="px-6 py-3 bg-slate-900 text-white text-sm font-medium rounded-full shadow-lg hover:bg-slate-800 transition-colors"
-                            >
-                                Show Policy Modal
-                            </button>
-                        </div>
-                    )}
-
-                    <div className="fixed bottom-6 text-center w-full pointer-events-none">
-                        <p className="text-xs text-slate-400">
-                            Conceptual UI • "Soft Block" Policy Override • Di Larmore Portfolio
-                        </p>
                     </div>
                 </div>
-            );
+                
+                <div class="form-group">
+                    <label class="form-label">Reason for booking</label>
+                    <input type="text" class="form-input" id="reasonInput" placeholder="Enter business justification..." oninput="checkInput()">
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-cancel">Cancel</button>
+                <button class="btn btn-book" id="bookBtn" onclick="submitBooking()">Book Anyway</button>
+            </div>
+        </div>
+        
+        <div id="successState" class="hidden">
+            <div class="success-state">
+                <div class="success-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                </div>
+                <h3 class="success-title">Booking Submitted</h3>
+                <p class="success-text">Your out-of-policy booking has been submitted for approval.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function checkInput() {
+            var input = document.getElementById('reasonInput');
+            var btn = document.getElementById('bookBtn');
+            if (input.value.trim().length > 0) {
+                btn.classList.add('enabled');
+            } else {
+                btn.classList.remove('enabled');
+            }
         }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<SoftBlockUI />);
+        
+        function submitBooking() {
+            var btn = document.getElementById('bookBtn');
+            if (!btn.classList.contains('enabled')) return;
+            
+            document.getElementById('formState').classList.add('hidden');
+            document.getElementById('successState').classList.remove('hidden');
+        }
     </script>
 </body>
 </html>
